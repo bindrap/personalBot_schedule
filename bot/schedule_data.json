@@ -1,0 +1,168 @@
+{
+  "tasks": {
+    "668521341749690420": [
+      {
+        "id": 6,
+        "description": "Ricing in endeavour os\n\u00e2\u20ac\u00a2 Fix eww widgets \n\u00e2\u20ac\u00a2 moving ascii\n\u00e2\u20ac\u00a2 fixing current advanced and art\n\u00e2\u20ac\u00a2 add more ascii art, fix sizing issues\n\u00e2\u20ac\u00a2 Trasparency of windows to be customized\n    - right not trasparent good but i want slight blur behind window \n\u00e2\u20ac\u00a2 Cursor, Icons, Visualizer\n     - how to change cursor!",
+        "date": "2025-07-12",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:05"
+      },
+      {
+        "id": 12,
+        "description": "- Proper EWW system configs, ascii art configs\n    - more research\n\n- How to change mouse cursor\n\n - Avoid login and go straight in? {NOT IMP}\n\n - Steam?\n\n - Git uploads of new files \n\n -",
+        "date": "2025-07-14",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:11"
+      },
+      {
+        "id": 16,
+        "description": "Wrap up",
+        "date": "2025-07-14",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:15"
+      },
+      {
+        "id": 17,
+        "description": "Maybe or something else depending on ankle/ear",
+        "date": "2025-07-14",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:16"
+      },
+      {
+        "id": 18,
+        "description": "Shirt",
+        "date": "2025-07-14",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "category": "project",
+        "created_at": "2025-07-14T13:54:41.708441"
+      },
+      {
+        "id": 19,
+        "description": "Fuck rain until she\u2019s crying",
+        "date": "2025-07-14",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "category": "project",
+        "created_at": "2025-07-14T13:59:09.624265"
+      },
+      {
+        "id": 21,
+        "description": "",
+        "date": "2025-07-14",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "category": "gym",
+        "created_at": "2025-07-14T14:39:28.161676"
+      },
+      {
+        "id": 22,
+        "title": "Test title",
+        "description": "",
+        "date": "2025-07-14",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "category": "gym",
+        "created_at": "2025-07-14T14:43:59.514407"
+      },
+      {
+        "id": 10,
+        "description": "7 - 9",
+        "date": "2025-07-15",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:09"
+      },
+      {
+        "id": 15,
+        "description": "Movie\nBowling\nAxe throwing\nArcade\nFood\nChill/minecraft\nIce cream, dairy freez",
+        "date": "2025-07-15",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:14"
+      },
+      {
+        "id": 20,
+        "description": "Finish up after work",
+        "date": "2025-07-15",
+        "time": "18:00",
+        "hour": 18,
+        "minute": 0,
+        "category": "study",
+        "created_at": "2025-07-14T14:38:35.730695"
+      },
+      {
+        "id": 13,
+        "description": "- Eww Configs\n    - Start from scratch\n        1. Basic box with proper styling\n        2. add material with proper styling\n        3. fix up logic for material showing and placing \n\n - How to change mouse cursor???\n\n - Steam?\n\n - Why does lock screen take 4 clicks to enter password\n    - Change time to sleep?\n\n - Set up Steam & repos/git \n\n - Further research of \n    - Key bindings\n    - Waybar\n    - Preconfigred hyperland setups",
+        "date": "2025-07-16",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:12"
+      },
+      {
+        "id": 14,
+        "description": "1) Start design creation\n---> logo?\n---> types?\n----------> big graphic front\n----------> small grahic and back\n---------->sleeve, front and back\n\n2) Use t shirt makers\n---> Vista or whatever\n\n3) Verify we have proper color aesthetic and vibe aesthetic\n--->  What are we going for?\n----------> Dark Minimal?\n----------> Gothic Metal\n\nlast) Create sets for Wilson, Rain and I \n---> 3 t shirts each (roughly $180)",
+        "date": "2025-07-17",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:13"
+      },
+      {
+        "id": 23,
+        "title": "Friday WOrk tested for test 2",
+        "description": "i tested it again 2",
+        "date": "2025-07-18",
+        "time": "09:30",
+        "hour": 9,
+        "minute": 30,
+        "category": "work",
+        "created_at": "2025-07-14T15:06:39.014133"
+      },
+      {
+        "id": 9,
+        "description": "NAGA Wayne\nLast day July 25\n\n$119 - Register 6/29/25 to 7/18/25 (Early Bird Registration)\n$139 - Register 7/19/25 to 7/23/25 (Normal Registration)\n$169 - Register on 7/24/25 to 7/25/25 (Late Registration)\nExtra Divisions including Absolute are $35 each\n\nRoughly $165 CDN",
+        "date": "2025-07-26",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:08"
+      },
+      {
+        "id": 11,
+        "description": "Shirt",
+        "date": "2025-07-30",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:10"
+      },
+      {
+        "id": 8,
+        "description": "PMP Exam",
+        "date": "2025-08-20",
+        "time": "09:00",
+        "hour": 9,
+        "minute": 0,
+        "created_at": "2025-07-14T12:00:07"
+      }
+    ]
+  },
+  "next_task_id": 24
+}
