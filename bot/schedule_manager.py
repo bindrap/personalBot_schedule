@@ -242,7 +242,7 @@ class ScheduleManager:
 
         for idx, date in enumerate(dates):
             date_str = date.strftime('%Y-%m-%d')
-            display_date = f"**{date.strftime('%a %b %d')}**"
+            display_date = f"__**➤ {date.strftime('%A, %B %d')}**__"
             day_tasks = [task for task in user_tasks if task['date'] == date_str]
             day_tasks.sort(key=lambda x: (x['hour'], x['minute']))
 

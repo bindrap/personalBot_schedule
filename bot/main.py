@@ -21,7 +21,9 @@ class MainMenuView(ui.View):
     async def view_schedule(self, interaction: discord.Interaction, button: ui.Button):
         user_id = interaction.user.id
         schedule_embed = schedule_manager.get_schedule_display(user_id)
-        await interaction.response.send_message(embed=schedule_embed, ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
+        await interaction.followup.send(embed=schedule_embed, ephemeral=True)
+
     
     @ui.button(label='➕ Add Task', style=discord.ButtonStyle.success, emoji='➕', custom_id='add_task')
     async def add_task(self, interaction: discord.Interaction, button: ui.Button):
@@ -43,6 +45,14 @@ class MainMenuView(ui.View):
         else:
             await interaction.response.send_message(embed=tasks_embed, ephemeral=True)
     
+    @ui.button(label="📎 View Another's Schedule", style=discord.ButtonStyle.secondary, emoji="📎", custom_id="view_other_schedule")
+    async def view_other_schedule(self, interaction: discord.Interaction, button: ui.Button):
+        await interaction.response.send_message(
+            content="👤 Select a user:",
+            view=UserSelectView(),
+            ephemeral=True
+        )
+
     @ui.button(label='❓ Help', style=discord.ButtonStyle.secondary, emoji='❓', custom_id='help_menu')
     async def help_command(self, interaction: discord.Interaction, button: ui.Button):
         help_embed = discord.Embed(
@@ -83,33 +93,111 @@ class MainMenuView(ui.View):
         
         await interaction.response.send_message(embed=help_embed, ephemeral=True)
 
+class UserSelectView(ui.View):
+    def __init__(self):
+        super().__init__(timeout=30)
+        self.add_item(ManualUserSelect())
+
+class ManualUserSelect(ui.Select):
+    def __init__(self):
+        # 👤 Hardcoded users: label = name, value = user_id
+        options = [
+            discord.SelectOption(label="Parteek", value="668521341749690420", emoji="🧑🏾‍💻"),
+            discord.SelectOption(label="Rain", value="760956176761356349", emoji="👱🏼‍♀️")
+        ]
+
+        super().__init__(
+            placeholder="Select a user...",
+            options=options,
+            min_values=1,
+            max_values=1,
+            custom_id="manual_user_select"
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        selected_id = int(self.values[0])
+        embed = schedule_manager.get_schedule_display(selected_id)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
 class CategorySelectView(ui.View):
     def __init__(self):
         super().__init__(timeout=60)
 
     @ui.button(label="💼 Work", style=discord.ButtonStyle.primary, custom_id="cat_work")
     async def work(self, interaction: discord.Interaction, button: ui.Button):
-        await interaction.response.send_modal(AddTaskModal(category="work"))
+        await interaction.response.send_message(
+            content="Pick a date and time:",
+            view=DateTimePickerView(category="work"),
+            ephemeral=True
+        )
 
     @ui.button(label="📘 Study", style=discord.ButtonStyle.primary, custom_id="cat_study")
     async def study(self, interaction: discord.Interaction, button: ui.Button):
-        await interaction.response.send_modal(AddTaskModal(category="study"))
+        await interaction.response.send_message(
+            content="Pick a date and time:",
+            view=DateTimePickerView(category="study"),
+            ephemeral=True
+        )
 
     @ui.button(label="💪 Gym", style=discord.ButtonStyle.success, custom_id="cat_gym")
     async def gym(self, interaction: discord.Interaction, button: ui.Button):
-        await interaction.response.send_modal(AddTaskModal(category="gym"))
+        await interaction.response.send_message(
+            content="Pick a date and time:",
+            view=DateTimePickerView(category="gym"),
+            ephemeral=True
+        )
 
     @ui.button(label="🧘 Personal", style=discord.ButtonStyle.secondary, custom_id="cat_personal")
     async def personal(self, interaction: discord.Interaction, button: ui.Button):
-        await interaction.response.send_modal(AddTaskModal(category="personal"))
+        await interaction.response.send_message(
+            content="Pick a date and time:",
+            view=DateTimePickerView(category="personal"),
+            ephemeral=True
+        )
 
     @ui.button(label="🛠️ Project", style=discord.ButtonStyle.danger, custom_id="cat_project")
     async def project(self, interaction: discord.Interaction, button: ui.Button):
-        await interaction.response.send_modal(AddTaskModal(category="project"))
+        await interaction.response.send_message(
+            content="Pick a date and time:",
+            view=DateTimePickerView(category="project"),
+            ephemeral=True
+        )
 
     @ui.button(label="📝 Other", style=discord.ButtonStyle.secondary, custom_id="cat_other")
     async def other(self, interaction: discord.Interaction, button: ui.Button):
-        await interaction.response.send_modal(AddTaskModal(category="default"))
+        await interaction.response.send_message(
+            content="Pick a date and time:",
+            view=DateTimePickerView(category="default"),
+            ephemeral=True
+        )
+
+class DateTimePickerView(ui.View):
+    def __init__(self, category):
+        super().__init__(timeout=60)
+        self.category = category
+        self.selected_date = None
+        self.selected_time = None
+
+        today = datetime.now()
+        dates = [(today + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(20)]
+        times = [f"{h:02d}:00" for h in range(7, 24)] + ["00:00"]
+
+        self.add_item(DatePickerSelect(self, dates))
+        self.add_item(TimePickerSelect(self, times))
+
+    @ui.button(label="Continue", style=discord.ButtonStyle.success, emoji="➡️")
+    async def continue_button(self, interaction: discord.Interaction, button: ui.Button):
+        if not self.selected_date or not self.selected_time:
+            await interaction.response.send_message(
+                content="❌ Please select both a date and time before continuing.",
+                ephemeral=True
+            )
+            return
+
+        await interaction.response.send_modal(
+            AddTaskModal(category=self.category, preset_date=self.selected_date, preset_time=self.selected_time)
+        )
 
 class TaskManagementView(ui.View):
     def __init__(self, user_id: int):
@@ -150,6 +238,32 @@ class TaskSelect(ui.Select):
         task_id = int(self.values[0])
         view = EditOrDeleteTaskView(user_id=self.user_id, task_id=task_id)
         await interaction.response.send_message(content=f"Selected Task ID: `{task_id}`", view=view, ephemeral=True)
+
+class DatePickerSelect(ui.Select):
+    def __init__(self, parent_view, options):
+        self.parent_view = parent_view
+        super().__init__(
+            placeholder="📅 Choose a date",
+            options=[discord.SelectOption(label=o, value=o) for o in options],
+            custom_id="date_picker"
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        self.parent_view.selected_date = self.values[0]
+        await interaction.response.defer()
+
+class TimePickerSelect(ui.Select):
+    def __init__(self, parent_view, options):
+        self.parent_view = parent_view
+        super().__init__(
+            placeholder="⏰ Choose a time",
+            options=[discord.SelectOption(label=o, value=o) for o in options],
+            custom_id="time_picker"
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        self.parent_view.selected_time = self.values[0]
+        await interaction.response.defer()
 
 class EditOrDeleteTaskView(ui.View):
     def __init__(self, user_id: int, task_id: int):
@@ -198,19 +312,21 @@ class EditTaskByIDModal(ui.Modal, title='Edit Selected Task'):
         await interaction.response.send_message(content=msg, ephemeral=True)
 
 class AddTaskModal(ui.Modal, title='Add New Task'):
-    def __init__(self, category="default"):
+    def __init__(self, category="default", preset_date="", preset_time=""):
         super().__init__()
         self.category = category
+        self.preset_date = preset_date
+        self.preset_time = preset_time
 
-    task_title = ui.TextInput(label='Task Title', required=True, max_length=100)
-    task_description = ui.TextInput(
-        label='Task Description (optional)',
-        style=discord.TextStyle.paragraph,
-        required=False,
-        max_length=200
-    )
-    date = ui.TextInput(label='Date (YYYY-MM-DD)', required=False, max_length=10)
-    time = ui.TextInput(label='Time (HH:MM)', required=False, max_length=5)
+        self.task_title = ui.TextInput(label='Task Title', required=True, max_length=100)
+        self.task_description = ui.TextInput(label='Task Description (optional)', style=discord.TextStyle.paragraph, required=False, max_length=200)
+        self.date = ui.TextInput(label='Date (YYYY-MM-DD)', required=False, max_length=10, default=self.preset_date)
+        self.time = ui.TextInput(label='Time (HH:MM)', required=False, max_length=5, default=self.preset_time)
+
+        self.add_item(self.task_title)
+        self.add_item(self.task_description)
+        self.add_item(self.date)
+        self.add_item(self.time)
 
     async def on_submit(self, interaction: discord.Interaction):
         user_id = interaction.user.id
@@ -218,8 +334,8 @@ class AddTaskModal(ui.Modal, title='Add New Task'):
             user_id=user_id,
             title=self.task_title.value,
             description=self.task_description.value or "",
-            date_str=self.date.value if self.date.value else None,
-            time_str=self.time.value if self.time.value else None,
+            date_str=self.date.value or None,
+            time_str=self.time.value or None,
             category=self.category
         )
 
@@ -235,6 +351,7 @@ class AddTaskModal(ui.Modal, title='Add New Task'):
                 description=result['error'],
                 color=discord.Color.red()
             )
+
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 class CategoryDropdown(ui.Select):
