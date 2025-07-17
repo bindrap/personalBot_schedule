@@ -217,14 +217,20 @@ class TaskManagementView(ui.View):
 class TaskSelect(ui.Select):
     def __init__(self, user_id: int):
         self.user_id = user_id
-        tasks = schedule_manager._get_user_tasks(user_id)
+        from datetime import datetime
 
-        options = [
-            discord.SelectOption(
-                label=f"{schedule_manager._format_time_display(t['hour'], t['minute'])} - {t.get('title', '[No Title]')[:80]}",
-                value=str(t['id'])
-            ) for t in tasks
-        ]
+        now = datetime.now()
+        tasks = sorted(
+            [t for t in schedule_manager._get_user_tasks(user_id)
+             if datetime.strptime(f"{t['date']} {t['hour']}:{t['minute']}", "%Y-%m-%d %H:%M") >= now],
+            key=lambda t: f"{t['date']} {t['hour']:02}:{t['minute']:02}"
+        )
+
+        options = []
+        for t in tasks[:25]:  # Limit to 25 to avoid Discord API error
+            label = f"{t['date']} • {schedule_manager._format_time_display(t['hour'], t['minute'])} - {t.get('title', '[No Title]')[:80]}"
+            value = str(t['id'])
+            options.append(discord.SelectOption(label=label, value=value))
 
         super().__init__(
             placeholder="Select a task to edit or delete...",
@@ -500,7 +506,7 @@ async def on_ready():
     bot.add_view(MainMenuView())
 
     # Send the !menu to a default channel (e.g., your channel ID)
-    channel = bot.get_channel(CHANNEL_ID) #============================================= CHANNEL ID
+    channel = bot.get_channel('CHANNEL_ID') #============================================= CHANNEL ID
     if channel:
         embed = discord.Embed(
             title="📅 Schedule Manager Bot",
@@ -516,7 +522,7 @@ async def on_ready():
 
 async def menu_reminder():
     await bot.wait_until_ready()
-    channel = bot.get_channel(CHANNEL_ID)  #============================================= CHANNEL ID
+    channel = bot.get_channel('CHANNEL_ID')  #============================================= CHANNEL ID
     while not bot.is_closed():
         if channel:
             embed = discord.Embed(
@@ -616,4 +622,4 @@ async def on_command_error(ctx, error):
 
 # Run the bot
 if __name__ == '__main__':
-    bot.run(BOT_TOKEN)
+    bot.run('BOT_TOKEN')

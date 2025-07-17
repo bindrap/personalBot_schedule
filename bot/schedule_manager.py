@@ -242,7 +242,7 @@ class ScheduleManager:
 
         for idx, date in enumerate(dates):
             date_str = date.strftime('%Y-%m-%d')
-            display_date = f"__**➤ {date.strftime('%A, %B %d')}**__"
+            display_date = f"📅 __**{date.strftime('%A, %B %d')}**__"
             day_tasks = [task for task in user_tasks if task['date'] == date_str]
             day_tasks.sort(key=lambda x: (x['hour'], x['minute']))
 
@@ -253,7 +253,13 @@ class ScheduleManager:
                     category = task.get("category", "default")
                     emoji = CATEGORY_STYLES.get(category, CATEGORY_STYLES["default"])["emoji"]
                     title = task.get('title', '[Untitled Task]')[:60]
-                    task_lines.append(f"{emoji} **{title}**\n`{time}`")
+                    desc = task.get('description', '')
+                    if desc:
+                        desc_display = f"\n> {desc[:80]}"  # truncate to 80 characters
+                    else:
+                        desc_display = ''
+
+                    task_lines.append(f"{emoji} **{title}**\n`{time}`{desc_display}")
                 value = "\n\n".join(task_lines)
             else:
                 value = "❌ *No tasks scheduled*"
@@ -263,54 +269,46 @@ class ScheduleManager:
         embed.set_footer(text="🧠 Use /menu or buttons to manage your tasks.")
         return embed
 
-
     def list_user_tasks(self, user_id: int) -> discord.Embed:
-        """List all tasks for a user with their IDs"""
+        """List upcoming tasks for a user in clean chronological order"""
         user_tasks = self._get_user_tasks(user_id)
-        
-        embed = discord.Embed(
-            title="📋 Your Tasks",
-            color=discord.Color.green()
-        )
-        
-        if not user_tasks:
-            embed.description = "You have no tasks scheduled."
-            return embed
-        
-        # Group tasks by date
-        tasks_by_date = {}
-        for task in user_tasks:
-            date = task['date']
-            if date not in tasks_by_date:
-                tasks_by_date[date] = []
-            tasks_by_date[date].append(task)
-        
-        # Display tasks grouped by date
-        for date_str in sorted(tasks_by_date.keys()):
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-            day_name = date_obj.strftime('%A')
-            display_date = date_obj.strftime('%B %d, %Y')
-            
-            tasks_text = ""
-            for task in tasks_by_date[date_str]:
-                task_time_display = self._format_time_display(task['hour'], task['minute'])
-                title = task.get('title', '[Untitled Task]')
-                tasks_text += f"**ID {task['id']}** - {task_time_display} - {title}\n"
-                desc = task.get('description')
-                if desc:
-                    tasks_text += f"> {desc[:80]}\n"
+        today = datetime.now().date()
 
-            
-            embed.add_field(
-                name=f"{day_name} ({display_date})",
-                value=tasks_text,
-                inline=False
-            )
-        
-        embed.set_footer(text=f"Total tasks: {len(user_tasks)}")
-        
+        # Filter out past tasks
+        future_tasks = [
+            task for task in user_tasks
+            if datetime.strptime(task['date'], '%Y-%m-%d').date() >= today
+        ]
+
+        future_tasks.sort(key=lambda x: (x['date'], x['hour'], x['minute']))
+
+        embed = discord.Embed(
+            title="📋 Upcoming Tasks",
+            color=discord.Color.orange()
+        )
+
+        if not future_tasks:
+            embed.description = "🎉 You have no upcoming tasks!"
+            return embed
+
+        # Build the display list
+        for task in future_tasks:
+            date_obj = datetime.strptime(task['date'], '%Y-%m-%d')
+            date_str = date_obj.strftime('%A, %B %d')
+            time_str = self._format_time_display(task['hour'], task['minute'])
+            title = task.get('title', '[Untitled Task]')
+            description = task.get('description', '')
+
+            # Format task display
+            value = f"🕒 `{date_str} at {time_str}`\n**{title}**"
+            if description:
+                value += f"\n> {description[:100]}"
+
+            embed.add_field(name="\u200b", value=value, inline=False)
+
+        embed.set_footer(text=f"Total upcoming tasks: {len(future_tasks)}")
         return embed
-    
+
     def get_user_task_count(self, user_id: int) -> int:
         """Get the total number of tasks for a user"""
         return len(self._get_user_tasks(user_id))
